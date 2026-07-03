@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DX E-Commerce Indicator Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="theme-overview">
+
+  <!-- Ambient light effects -->
+  <div class="bg-ambient-light" id="ambient-light-top"></div>
+  <div class="bg-ambient-light-bottom" id="ambient-light-bottom"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar glass-panel">
+    <div class="logo-container">
+      <div class="logo">
+        <i data-lucide="activity"></i>
+        <span>DX Dash</span>
+      </div>
+    </div>
+    
+    <ul class="sidebar-menu">
+      <li><a href="#" class="menu-item active" data-view="overview"><i data-lucide="layout-dashboard"></i>오버뷰 (Overview)</a></li>
+      <li><a href="#" class="menu-item" data-view="product"><i data-lucide="package"></i>상품 관리 (Product)</a></li>
+      <li><a href="#" class="menu-item" data-view="order"><i data-lucide="shopping-cart"></i>주문/매출 (Order)</a></li>
+      <li><a href="#" class="menu-item" data-view="search"><i data-lucide="search"></i>검색 엔진 (Search)</a></li>
+      <li><a href="#" class="menu-item" data-view="recommend"><i data-lucide="sparkles"></i>개인화 추천 (Rec)</a></li>
+      <li><a href="#" class="menu-item" data-view="exhibition"><i data-lucide="layers"></i>전시/기획전 (Exh)</a></li>
+      <li><a href="#" class="menu-item" data-view="banner-map"><i data-lucide="map"></i>구좌별 CTR 분석 (Map)</a></li>
+      <li><a href="#" class="menu-item" data-view="member"><i data-lucide="users"></i>회원/활성 (Member)</a></li>
+    </ul>
+
+    <!-- Quick Simulators (Visible from Sidebar) -->
+    <div class="simulator-panel">
+      <div class="simulator-header">시뮬레이터 (Simulator)</div>
+      <div class="sim-button-grid">
+        <button class="sim-btn" id="sim-btn-refresh">
+          <span>데이터 실시간 갱신</span>
+          <i data-lucide="refresh-cw"></i>
+        </button>
+        <button class="sim-btn" id="sim-btn-burst">
+          <span>실시간 주문 폭주</span>
+          <i data-lucide="zap"></i>
+        </button>
+        <button class="sim-btn" id="sim-btn-traffic">
+          <span>트래픽 스파이크 발생</span>
+          <i data-lucide="trending-up"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar">DX</div>
+      <div class="user-info">
+        <span class="user-name">이커머스 운영팀</span>
+        <span class="user-role">Administrator</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    
+    <!-- Top Header -->
+    <header class="main-header glass-panel">
+      <div class="header-left">
+        <div class="header-title-row">
+          <h1 class="header-title" id="current-panel-title">이커머스 지표 분석 오버뷰</h1>
+          <span class="domain-badge" id="current-domain-badge">Overview</span>
+        </div>
+        <p class="header-subtitle" id="current-panel-subtitle">각 도메인의 주요 비즈니스 메트릭스 및 실시간 시스템 헬스 모니터링</p>
+      </div>
+      
+      <div class="header-right">
+        <!-- Metric Search & Glossary -->
+        <div class="search-wrapper">
+          <i data-lucide="search"></i>
+          <input type="text" class="search-input" id="glossary-search" placeholder="지표명 검색 (예: GMV, CTR)..." autocomplete="off">
+          
+          <!-- Search Results Dropdown -->
+          <div class="search-results-panel" id="search-results-panel">
+            <!-- Dynamic search results populated by js -->
+          </div>
+        </div>
+
+        <div class="sync-indicator">
+          <div class="sync-dot"></div>
+          <span id="last-sync-time">동기화 완료: 20:12:00</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Viewport -->
+    <div class="dashboard-viewport">
+
+      <!-- ================= 1. OVERVIEW PANEL ================= -->
+      <section class="view-panel active" id="panel-overview">
+        <!-- KPI Card Grid -->
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">일일 거래액 (GMV)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="coins"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="ov-gmv">₩124,500,000</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>12.4%</span>
+            </div>
+            <span class="kpi-subtext">전일 대비 ₩13,700,000 상승</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">일일 주문수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="shopping-bag"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="ov-orders">2,480건</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>8.2%</span>
+            </div>
+            <span class="kpi-subtext">평균 주문 단가(AOV): ₩50,200</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">구매 전환율 (CVR)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="percent"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="ov-cvr">3.85%</span>
+              <span class="kpi-trend trend-down"><i data-lucide="arrow-down-left"></i>0.12%</span>
+            </div>
+            <span class="kpi-subtext">세션 방문자 중 구매 도달률</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">활성 사용자 수 (DAU)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="users"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="ov-dau">64,200명</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>15.1%</span>
+            </div>
+            <span class="kpi-subtext">실시간 동시접속: 1,420명</span>
+          </div>
+        </div>
+
+        <!-- Main Chart & Health Status Grid -->
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="trending-up"></i>일주일간 매출 및 구매건수 트렌드</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-overview-revenue"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="heart-pulse"></i>도메인별 헬스 레이더</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-overview-radar"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Checklist -->
+        <div class="glass-card">
+          <div class="card-title-row">
+            <h3 class="card-title"><i data-lucide="shield-check"></i>각 서비스 도메인 운영 상태</h3>
+            <span class="tag-badge tag-green">전체 정상</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" id="overview-health-table">
+              <thead>
+                <tr>
+                  <th>도메인명</th>
+                  <th>운영 지표 상태</th>
+                  <th>평균 응답 속도</th>
+                  <th>에러 레이트 (24H)</th>
+                  <th>이상 징후 진단</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table rows generated dynamically by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. PRODUCT PANEL ================= -->
+      <section class="view-panel" id="panel-product">
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">등록 상품 수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="package-search"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="prod-total">42,850개</span>
+            </div>
+            <span class="kpi-subtext">신규 등록 상품(금일): +24개</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">활성 전시율</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="eye"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="prod-active-rate">94.2%</span>
+            </div>
+            <span class="kpi-subtext">전시 가능 상품: 40,364개</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">안정 재고율</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="clipboard-list"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="prod-stock-rate">98.45%</span>
+            </div>
+            <span class="kpi-subtext">품절 임박 품목 5개 미만 유지 중</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">재고 경고 건수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="alert-triangle"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="prod-warn-count">3건</span>
+              <span class="kpi-trend trend-down" id="prod-warn-trend"><i data-lucide="arrow-down-left"></i>2건</span>
+            </div>
+            <span class="kpi-subtext">즉각적인 재입고가 필요합니다.</span>
+          </div>
+        </div>
+
+        <div class="content-grid-1-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="pie-chart"></i>상품 카테고리별 전시 비율</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-product-category"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="amber-alert"></i>재고 소진 위험 상품 (Low Stock Alerts)</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table" id="prod-stock-alerts-table">
+                <thead>
+                  <tr>
+                    <th>상품명</th>
+                    <th>카테고리</th>
+                    <th>현재 재고</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+            <div class="card-action-bar">
+              <button class="action-btn" id="btn-prod-add"><i data-lucide="plus"></i>신규 상품 가상 등록</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. ORDER PANEL ================= -->
+      <section class="view-panel" id="panel-order">
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">금일 누적 거래액 (GMV)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="credit-card"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="order-gmv">₩124,500,000</span>
+            </div>
+            <span class="kpi-subtext">금일 목표액 대비 83% 달성</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">총 결제 완료수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="check-square"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="order-count">2,480건</span>
+            </div>
+            <span class="kpi-subtext">취소/환불 요청: 32건</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">평균 주문 단가 (AOV)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="dollar-sign"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="order-aov">₩50,200</span>
+            </div>
+            <span class="kpi-subtext">전월 평균: ₩48,900</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">취소/반품률 (Refund Rate)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="x-circle"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="order-refund-rate">1.27%</span>
+              <span class="kpi-trend trend-down"><i data-lucide="arrow-down-left"></i>0.15%</span>
+            </div>
+            <span class="kpi-subtext">업계 표준(3%) 대비 우수</span>
+          </div>
+        </div>
+
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="bar-chart-2"></i>결제 퍼널 분석 (Checkout Funnel)</h3>
+            </div>
+            <div class="funnel-container" id="order-funnel">
+              <!-- Animated Funnel steps loaded dynamically by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="clock"></i>시간대별 매출 분포</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-order-hourly"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title-row">
+            <h3 class="card-title"><i data-lucide="alert-circle"></i>실시간 주문 추적 시뮬레이션</h3>
+          </div>
+          <p class="header-subtitle" style="margin-bottom: 16px;">주문 유입을 발생시켜 실시간 매출 및 퍼널 변화를 분석할 수 있습니다.</p>
+          <div class="card-action-bar">
+            <button class="action-btn" id="btn-sim-order-one"><i data-lucide="shopping-bag"></i>가상 주문 1건 발생</button>
+            <button class="action-btn" id="btn-sim-order-burst"><i data-lucide="zap"></i>가상 대량 주문 폭주 (100건)</button>
+            <button class="action-btn btn-secondary" id="btn-sim-order-reset"><i data-lucide="rotate-ccw"></i>매출 상태 초기화</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. SEARCH PANEL ================= -->
+      <section class="view-panel" id="panel-search">
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">검색 클릭율 (CTR)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="mouse-pointer-click"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="search-ctr">41.8%</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>2.1%</span>
+            </div>
+            <span class="kpi-subtext">검색 결과 중 상품 클릭 비율</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">검색 결과 없음 비율</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="file-warning"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="search-zero-rate">1.45%</span>
+              <span class="kpi-trend trend-down"><i data-lucide="arrow-down-left"></i>0.32%</span>
+            </div>
+            <span class="kpi-subtext">품절 검색어 및 사전 미등록어 관리 대상</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">평균 응답속도 (Latency)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="zap-off"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="search-latency">82ms</span>
+            </div>
+            <span class="kpi-subtext">Elasticsearch 노드 가동 상태: 정상</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">총 검색 쿼리수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="database"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="search-total-queries">184,200건</span>
+            </div>
+            <span class="kpi-subtext">금일 최고 동시 검색량: 280 QPS</span>
+          </div>
+        </div>
+
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="bar-chart-3"></i>인기 급상승 검색어 순위</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-search-keywords"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="slash-circle"></i>최근 검색결과 없음 (Zero Results)</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table" id="search-zero-table">
+                <thead>
+                  <tr>
+                    <th>검색어</th>
+                    <th>검색 횟수</th>
+                    <th>상태</th>
+                    <th>처리 조치</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+            <div class="card-action-bar">
+              <button class="action-btn" id="btn-search-simulate"><i data-lucide="terminal"></i>신규 미결과 검색어 강제 주입</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. RECOMMENDATION PANEL ================= -->
+      <section class="view-panel" id="panel-recommend">
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">추천 영역 클릭율 (CTR)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="sparkles"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="rec-ctr">8.42%</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>0.64%</span>
+            </div>
+            <span class="kpi-subtext">추천 위젯 노출 대비 클릭 수</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">추천 기여 거래액 (Attribution)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="trending-up"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="rec-revenue">₩18,240,000</span>
+            </div>
+            <span class="kpi-subtext">전체 GMV 중 추천 클릭 구매 기여도: 14.6%</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">추천 위젯 노출 커버리지</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="layout"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="rec-coverage">88.5%</span>
+            </div>
+            <span class="kpi-subtext">페이지뷰 중 1개 이상의 추천영역 노출률</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">알고리즘 모델 정밀도</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="target"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="rec-precision">82.1%</span>
+            </div>
+            <span class="kpi-subtext">추천 알고리즘 서빙 지연: 24ms</span>
+          </div>
+        </div>
+
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="activity"></i>알고리즘 모델별 CTR 성능 트렌드</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-rec-performance"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="grid"></i>추천 위젯별 성과 비교</h3>
+            </div>
+            <div class="stat-list" id="rec-widgets-list">
+              <!-- List generated by JS -->
+            </div>
+            <div class="card-action-bar" style="margin-top: 18px;">
+              <button class="action-btn" id="btn-rec-switch"><i data-lucide="cpu"></i>개인화 모델 전략 전환</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. EXHIBITION PANEL ================= -->
+      <section class="view-panel" id="panel-exhibition">
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">메인 배너 영역 CTR</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="image"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="exh-banner-ctr">12.8%</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>1.5%</span>
+            </div>
+            <span class="kpi-subtext">전시 배너 롤링 대비 유니크 클릭률</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">전시 카테고리 이탈률</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="log-out"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="exh-bounce-rate">32.4%</span>
+              <span class="kpi-trend trend-down"><i data-lucide="arrow-down-left"></i>2.1%</span>
+            </div>
+            <span class="kpi-subtext">카테고리 첫 페이지 진입 후 바로 이탈</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">진행 중 기획전/이벤트</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="calendar"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="exh-active-events">8개</span>
+            </div>
+            <span class="kpi-subtext">대기 중인 예정 이벤트: 4개</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">기획전 이벤트 CVR</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="badge-check"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="exh-event-cvr">5.48%</span>
+            </div>
+            <span class="kpi-subtext">기획전 전용 상품 상세 진입 기준</span>
+          </div>
+        </div>
+
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="bar-chart-3"></i>구좌(Slot)별 전시 배너 클릭 효율</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-exh-slots"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="tag"></i>카테고리별 트래픽 가중치</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-exh-categories"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title-row">
+            <h3 class="card-title"><i data-lucide="megaphone"></i>메인 전시 배너 긴급 신규 배포</h3>
+          </div>
+          <p class="header-subtitle" style="margin-bottom: 16px;">고효율 마케팅을 위한 전시 프로모션 구좌 배포를 가상으로 시뮬레이션합니다.</p>
+          <div class="card-action-bar">
+            <button class="action-btn" id="btn-exh-deploy"><i data-lucide="upload-cloud"></i>프로모션 배너 슬롯 배포</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6.5 BANNER MAP PANEL ================= -->
+      <section class="view-panel" id="panel-banner-map">
+        <!-- Top metrics row -->
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">선택된 분석 구좌</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="tag"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="map-kpi-selected">메인 비주얼 롤링 배너</span>
+            </div>
+            <span class="kpi-subtext" id="map-kpi-desc">홈페이지 최상단 고효율 비주얼 카드 영역</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">구좌 평균 클릭률 (CTR)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="mouse-pointer-click"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="map-kpi-ctr">12.80%</span>
+              <span class="kpi-trend trend-up" id="map-kpi-trend"><i data-lucide="arrow-up-right"></i>1.5%</span>
+            </div>
+            <span class="kpi-subtext">전일 평균 대비 성과 추이</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">누적 노출 / 클릭수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="eye"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="map-kpi-clicks">345,000 / 44,160</span>
+            </div>
+            <span class="kpi-subtext" id="map-kpi-ratio">노출 대비 클릭 비중 (CTR 기반)</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">구매 전환율 (CVR)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="shopping-bag"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="map-kpi-cvr">5.48%</span>
+            </div>
+            <span class="kpi-subtext">해당 구좌 유입 유저의 최종 구매 비중</span>
+          </div>
+        </div>
+
+        <!-- Content grid -->
+        <div class="content-grid-2-1">
+          <!-- Left: Phone Simulator -->
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="smartphone"></i>m.halfclub.com 메인 홈 시뮬레이터</h3>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">CTR 오버레이</span>
+                <label class="switch">
+                  <input type="checkbox" id="toggle-ctr-overlay">
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+            </div>
+            <p class="header-subtitle" style="margin-bottom: 12px;">각 구좌 영역을 마우스 오버하거나 클릭하면 상세 성과가 추적됩니다.</p>
+            
+            <div class="phone-mockup-wrapper">
+              <div class="phone-device" id="map-phone-device">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                  
+                  <!-- 1. Top Banner -->
+                  <div class="mock-slot mock-top-banner" id="mock-top-banner" data-slot="top-banner">
+                    <span id="mock-top-banner-text">신규 회원 가입 시 10% 앱 전용 웰컴쿠폰 즉시 지급!</span>
+                    <i data-lucide="x" style="font-size: 10px; width: 10px; height: 10px;"></i>
+                    <div class="ctr-overlay"><div class="ctr-badge low">CTR 4.2%</div></div>
+                  </div>
+
+                  <!-- 2. Header Area -->
+                  <div class="mock-slot mock-header" id="mock-header" data-slot="header-gnb">
+                    <span class="mock-logo">HALFCLUB</span>
+                    <div class="mock-header-icons">
+                      <i data-lucide="search" style="width: 14px; height: 14px;"></i>
+                      <i data-lucide="shopping-cart" style="width: 14px; height: 14px;"></i>
+                    </div>
+                  </div>
+
+                  <!-- 3. GNB Area (Shares GNB data slot) -->
+                  <div class="mock-slot mock-gnb" id="mock-gnb" data-slot="header-gnb">
+                    <span class="active">아울렛</span>
+                    <span>여성</span>
+                    <span>남성</span>
+                    <span>아동</span>
+                    <span>아웃도어</span>
+                    <span>베스트</span>
+                    <div class="ctr-overlay"><div class="ctr-badge high">CTR 15.8%</div></div>
+                  </div>
+
+                  <!-- 4. Main Visual Slider -->
+                  <div class="mock-slot mock-main-banner" id="mock-main-banner" data-slot="main-banner">
+                    <div class="mock-banner-overlay">
+                      <div class="mock-banner-title" id="mock-main-banner-text">여름 시즌오프 최대 80% 브랜드 연합전 (헤지스/닥스 등)</div>
+                    </div>
+                    <div class="mock-banner-page">1/5</div>
+                    <div class="ctr-overlay"><div class="ctr-badge high">CTR 12.8%</div></div>
+                  </div>
+
+                  <!-- 5. Quick Shortcut Menu -->
+                  <div class="mock-slot mock-quick-menu" id="mock-quick-menu" data-slot="quick-menu">
+                    <div class="quick-item">
+                      <div class="quick-icon"><i data-lucide="zap" style="width:14px; height:14px;"></i></div>
+                      <span class="quick-text">하루특가</span>
+                    </div>
+                    <div class="quick-item">
+                      <div class="quick-icon"><i data-lucide="layers" style="width:14px; height:14px;"></i></div>
+                      <span class="quick-text">기획전</span>
+                    </div>
+                    <div class="quick-item">
+                      <div class="quick-icon"><i data-lucide="award" style="width:14px; height:14px;"></i></div>
+                      <span class="quick-text">베스트</span>
+                    </div>
+                    <div class="quick-item">
+                      <div class="quick-icon"><i data-lucide="ticket" style="width:14px; height:14px;"></i></div>
+                      <span class="quick-text">쿠폰존</span>
+                    </div>
+                    <div class="quick-item">
+                      <div class="quick-icon"><i data-lucide="sparkles" style="width:14px; height:14px;"></i></div>
+                      <span class="quick-text">신상품</span>
+                    </div>
+                    <div class="ctr-overlay"><div class="ctr-badge mid">CTR 8.4%</div></div>
+                  </div>
+
+                  <!-- 6. Time Sale Slot -->
+                  <div class="mock-slot mock-time-sale" id="mock-time-sale" data-slot="time-sale">
+                    <div class="sale-header">
+                      <div class="sale-title">
+                        <i data-lucide="clock" style="width:12px; height:12px; color: #ff5e00;"></i>
+                        <span>하루특가 타임딜</span>
+                      </div>
+                      <div class="sale-timer">05:14:28</div>
+                    </div>
+                    <div class="sale-product">
+                      <div class="sale-img" id="mock-time-sale-img"></div>
+                      <div class="sale-info">
+                        <div class="sale-name" id="mock-time-sale-text">버커루 남여공용 린넨 셔츠 외 15종 (70% 한정 할인)</div>
+                        <div class="sale-price-row">
+                          <span class="sale-pct">70%</span>
+                          <span class="sale-price">19,800원</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ctr-overlay"><div class="ctr-badge mid">CTR 9.6%</div></div>
+                  </div>
+
+                  <!-- 7. Middle Promo Banner -->
+                  <div class="mock-slot mock-mid-banner" id="mock-mid-banner" data-slot="mid-banner">
+                    <div class="mock-mid-title" id="mock-mid-banner-text">골프&아웃도어 패밀리 세일전 최대 85% 쿠폰팩</div>
+                    <div class="ctr-overlay"><div class="ctr-badge mid">CTR 5.1%</div></div>
+                  </div>
+
+                  <!-- 8. Recommend Brand Slot -->
+                  <div class="mock-slot mock-recommend-slot" id="mock-recommend-slot" data-slot="recommend-slot">
+                    <div class="rec-title">오늘의 MD 추천 브랜드</div>
+                    <div class="rec-product">
+                      <div class="rec-item" style="width: 100%;">
+                        <div class="rec-item-img" id="mock-recommend-img"></div>
+                        <div class="rec-item-name" id="mock-recommend-text">지이크/까르뜨블랑슈 남성 모던 캐주얼 위크</div>
+                      </div>
+                    </div>
+                    <div class="ctr-overlay"><div class="ctr-badge mid">CTR 6.8%</div></div>
+                  </div>
+
+                  <!-- 9. Best Products Grid -->
+                  <div class="mock-slot mock-best-products" id="mock-best-products" data-slot="best-products">
+                    <div class="best-title">실시간 베스트 핫딜</div>
+                    <div class="best-grid">
+                      <div class="best-item">
+                        <div class="best-img" id="mock-best-img"></div>
+                        <div class="best-item-name" id="mock-best-text">여름 쿨텐션 반팔 티셔츠 외 트렌드 상품 탑 10</div>
+                        <div class="best-item-price">14,900원</div>
+                      </div>
+                      <div class="best-item">
+                        <div class="best-img" style="background-image: url('https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=400&q=80')"></div>
+                        <div class="best-item-name">쉬즈미스 페미닌 썸머 원피스 특가전</div>
+                        <div class="best-item-price">34,500원</div>
+                      </div>
+                    </div>
+                    <div class="ctr-overlay"><div class="ctr-badge high">CTR 11.2%</div></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Details, Chart, Simulator -->
+          <div class="glass-card" style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <div class="card-title-row" style="margin-bottom: 4px;">
+                <h3 class="card-title" id="map-detail-title"><i data-lucide="activity"></i>메인 비주얼 롤링 배너</h3>
+              </div>
+              <p class="header-subtitle" id="map-detail-desc">홈페이지 최상단 고효율 비주얼 카드 영역</p>
+            </div>
+
+            <!-- Current Asset Status -->
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 14px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 6px;">현재 활성 송출 소재</span>
+              <p style="font-size: 13px; font-weight: 600; color: white;" id="map-detail-active-asset">여름 시즌오프 최대 80% 브랜드 연합전 (헤지스/닥스 등)</p>
+            </div>
+
+            <!-- Hourly Click Trend Chart -->
+            <div style="flex-grow: 1; min-height: 180px; position: relative;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 10px;"><i data-lucide="bar-chart-3"></i>시간대별 클릭수 추이 (Hourly Click Trend)</span>
+              <div style="position: absolute; top: 25px; bottom: 0; left: 0; right: 0;">
+                <canvas id="chart-map-hourly"></canvas>
+              </div>
+            </div>
+
+            <!-- Banner Asset Swap Simulator -->
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 10px;"><i data-lucide="sparkles"></i>배너 소재 변경 시뮬레이터 (A/B Test 예측)</span>
+              
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="map-asset-select">대체 배너 소재 선택</label>
+                <select id="map-asset-select" class="form-input" style="background: #182030; border: 1px solid var(--border-color); color: white;">
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+              
+              <button class="action-btn" id="btn-map-simulate" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <i data-lucide="play-circle"></i>
+                <span>선택 소재 송출 시뮬레이션 시작</span>
+              </button>
+
+              <!-- Loading spinner for prediction -->
+              <div class="predict-loader-container hidden" id="predict-loader">
+                <div class="predict-spinner"></div>
+                <div class="predict-text">AI 성과 예측 모델 구동 중...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 7. MEMBER PANEL ================= -->
+      <section class="view-panel" id="panel-member">
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">분석 대상 사이트:</span>
+          <select id="member-site-select" class="form-input" style="background: rgba(22, 30, 49, 0.8); color: white; padding: 6px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); font-size: 13px; font-weight: 600; cursor: pointer; outline: none;">
+            <option value="전체" selected>전체 (하프클럽 + 보리보리)</option>
+            <option value="하프">하프클럽 (Half Club)</option>
+            <option value="보리">보리보리 (Boribori)</option>
+          </select>
+        </div>
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card highlight">
+            <div class="kpi-header">
+              <span class="kpi-title">가입 회원수</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="user-plus"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="memb-total">182,450명</span>
+            </div>
+            <span class="kpi-subtext">오늘 가입한 신규 회원: +124명</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">일일 활성 사용자 수 (DAU)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="user-check"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="memb-dau">64,200명</span>
+              <span class="kpi-trend trend-up"><i data-lucide="arrow-up-right"></i>4.2%</span>
+            </div>
+            <span class="kpi-subtext">월간 활성 회원수 (MAU): 120,400명</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">회원 매출 기여도</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="wallet"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="memb-revenue-share">89.4%</span>
+            </div>
+            <span class="kpi-subtext">비회원 주문 비중: 10.6%</span>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">회원 이탈률 (Churn Rate)</span>
+              <div class="kpi-icon-wrapper"><i data-lucide="user-x"></i></div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="memb-churn">1.82%</span>
+              <span class="kpi-trend trend-down"><i data-lucide="arrow-down-left"></i>0.08%</span>
+            </div>
+            <span class="kpi-subtext">30일간 로그인 이력 없는 유저 전환</span>
+          </div>
+        </div>
+
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="trending-up"></i>일일 신규 가입자수 및 로그인 트렌드</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-memb-signups"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="award"></i>고객 등급별 비중 분포</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-memb-loyalty"></canvas>
+            </div>
+        </div>
+
+        <!-- Annual Member Growth & Turnover -->
+        <div class="content-grid-2-1">
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="bar-chart-3"></i>연도별 회원 증감 추이 (신규 vs 탈퇴)</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-memb-annual-turnover"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title-row">
+              <h3 class="card-title"><i data-lucide="file-text"></i>연도별 유효 회원 및 구매 지표</h3>
+            </div>
+            <div class="table-wrapper" style="max-height: 260px; overflow-y: auto;">
+              <table class="data-table" id="memb-annual-table">
+                <thead>
+                  <tr>
+                    <th>연도</th>
+                    <th>유효 회원수</th>
+                    <th>신규 가입</th>
+                    <th>탈퇴 회원</th>
+                    <th>구매 고객수</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title-row">
+            <h3 class="card-title"><i data-lucide="user-cog"></i>마케팅 이벤트 시뮬레이터</h3>
+          </div>
+          <p class="header-subtitle" style="margin-bottom: 16px;">회원 가입 및 활성화를 높이기 위한 가상 신규 유저 유입 이벤트를 실행합니다.</p>
+          <div class="card-action-bar">
+            <button class="action-btn" id="btn-memb-burst"><i data-lucide="sparkles"></i>가상 회원 대량 유입 시뮬레이션 (150명)</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="modal-product-add">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="package-plus"></i>가상 상품 등록</h3>
+        <button class="modal-close" data-close="modal-product-add">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="new-prod-name">상품명</label>
+          <input type="text" id="new-prod-name" class="form-input" placeholder="예: 무선 노이즈캔슬링 헤드폰 X">
+        </div>
+        <div class="form-group">
+          <label for="new-prod-cat">카테고리</label>
+          <input type="text" id="new-prod-cat" class="form-input" placeholder="예: 디지털/가전">
+        </div>
+        <div class="form-group">
+          <label for="new-prod-stock">초기 재고수량</label>
+          <input type="number" id="new-prod-stock" class="form-input" value="50" min="0">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn btn-secondary" data-close="modal-product-add">취소</button>
+        <button class="action-btn" id="btn-submit-product-add">등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deploy Exhibition Banner Modal -->
+  <div class="modal-overlay" id="modal-exh-deploy">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="upload-cloud"></i>프로모션 배너 슬롯 배포</h3>
+        <button class="modal-close" data-close="modal-exh-deploy">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="exh-banner-name">배너 캠페인명</label>
+          <input type="text" id="exh-banner-name" class="form-input" placeholder="예: 2026 썸머 크레이지 세일">
+        </div>
+        <div class="form-group">
+          <label for="exh-banner-slot">배포 위치 (Slot)</label>
+          <input type="text" id="exh-banner-slot" class="form-input" placeholder="예: Slot 4 (메인 중앙 롤링)">
+        </div>
+        <div class="form-group">
+          <label for="exh-banner-ctr-val">예상 CTR (%)</label>
+          <input type="number" id="exh-banner-ctr-val" class="form-input" value="8.5" step="0.1" min="0" max="100">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn btn-secondary" data-close="modal-exh-deploy">취소</button>
+        <button class="action-btn" id="btn-submit-exh-deploy">배포</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inject Search Query Modal -->
+  <div class="modal-overlay" id="modal-search-simulate">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="terminal"></i>신규 미결과 검색어 강제 주입</h3>
+        <button class="modal-close" data-close="modal-search-simulate">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="search-query-val">검색 쿼리명</label>
+          <input type="text" id="search-query-val" class="form-input" placeholder="예: 리미티드 에디션 키보드">
+        </div>
+        <div class="form-group">
+          <label for="search-query-count">검색 유입수</label>
+          <input type="number" id="search-query-count" class="form-input" value="120" min="1">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn btn-secondary" data-close="modal-search-simulate">취소</button>
+        <button class="action-btn" id="btn-submit-search-simulate">주입</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Recommendation Strategy Modal -->
+  <div class="modal-overlay" id="modal-rec-switch">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="cpu"></i>개인화 모델 전략 전환</h3>
+        <button class="modal-close" data-close="modal-rec-switch">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="rec-strategy-select">적용 알고리즘 모델</label>
+          <select id="rec-strategy-select" class="form-input" style="background: rgb(22, 30, 49); color: white;">
+            <option value="collaborative">협업 필터링 (Collaborative Filtering v4.2)</option>
+            <option value="deeplearning" selected>딥러닝 기반 하이브리드 추천 모델 (Multi-Task DL v2.1)</option>
+            <option value="session">실시간 세션 기반 시퀀셜 모델 (GRU4Rec v1.5)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn btn-secondary" data-close="modal-rec-switch">취소</button>
+        <button class="action-btn" id="btn-submit-rec-switch">전환 및 배포</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js and application script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
