@@ -1423,26 +1423,36 @@ let memberData = null;
 let annualMemberData = null;
 
 function loadMemberData() {
-  // Load Monthly Data
-  fetch('data/member_data.json')
-    .then(response => response.json())
-    .then(data => {
-      memberData = data;
-      updateMemberDataState(document.getElementById('member-site-select').value || '전체');
-      triggerToast('엑셀 데이터 동기화 완료', '월별 등급 현황 엑셀 데이터가 성공적으로 반영되었습니다.', 'success');
-      
-      // Load Annual Data
-      return fetch('data/annual_member_data.json');
-    })
-    .then(response => response.json())
-    .then(data => {
-      annualMemberData = data;
-      updateAnnualMemberDataState(document.getElementById('member-site-select').value || '전체');
-    })
-    .catch(err => {
-      console.error('Failed to load member data from json', err);
-      triggerToast('데이터 동기화 실패', '등급/연누계 엑셀 데이터 파일 로드 중 오류가 발생했습니다.', 'error');
-    });
+  // Use injected variables if available, otherwise fallback to fetch
+  if (window.memberDataInjected && window.annualMemberDataInjected) {
+    memberData = window.memberDataInjected;
+    updateMemberDataState(document.getElementById('member-site-select').value || '전체');
+    triggerToast('엑셀 데이터 동기화 완료', '월별 등급 현황 엑셀 데이터가 성공적으로 반영되었습니다.', 'success');
+    
+    annualMemberData = window.annualMemberDataInjected;
+    updateAnnualMemberDataState(document.getElementById('member-site-select').value || '전체');
+  } else {
+    // Load Monthly Data
+    fetch('data/member_data.json')
+      .then(response => response.json())
+      .then(data => {
+        memberData = data;
+        updateMemberDataState(document.getElementById('member-site-select').value || '전체');
+        triggerToast('엑셀 데이터 동기화 완료', '월별 등급 현황 엑셀 데이터가 성공적으로 반영되었습니다.', 'success');
+        
+        // Load Annual Data
+        return fetch('data/annual_member_data.json');
+      })
+      .then(response => response.json())
+      .then(data => {
+        annualMemberData = data;
+        updateAnnualMemberDataState(document.getElementById('member-site-select').value || '전체');
+      })
+      .catch(err => {
+        console.error('Failed to load member data from json', err);
+        triggerToast('데이터 동기화 실패', '등급/연누계 엑셀 데이터 파일 로드 중 오류가 발생했습니다.', 'error');
+      });
+  }
 }
 
 function updateMemberDataState(site) {
